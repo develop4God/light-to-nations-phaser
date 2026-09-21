@@ -14,6 +14,13 @@ const config: Types.Core.GameConfig = {
     input: {
         activePointers: 3
     },
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { x: 0, y: 0 },
+            debug: false
+        }
+    },
     scene: [
         Game
     ]
