@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 import { NationMap } from '../game/NationMap';
 import { PilgrimPlayer } from '../game/PilgrimPlayer';
 import { PlayerInput } from '../game/PlayerInput';
+import { CoordinateOverlay } from '../ui/CoordinateOverlay';
 
 export class Game extends Scene
 {
@@ -18,6 +19,7 @@ export class Game extends Scene
         this.load.image('pilgrim', 'assets/hero/pilgrim_placeholder.png');
         this.load.tilemapTiledJSON('sample_village', 'assets/tiled/medieval_sample.json');
         this.load.image('medieval_tiles', 'assets/tiled/medieval_tilesheet.png');
+        this.load.image('lush_meadow', 'assets/tiled/lush_meadow/lush-meadow-grass-001.png');
     }
 
     create ()
@@ -30,6 +32,11 @@ export class Game extends Scene
             obstacleLayers: ['Buildings', 'Trees']
         });
 
+        nation.groundLayer.setVisible(false);
+        this.add.tileSprite(0, 0, nation.widthInPixels, nation.heightInPixels, 'lush_meadow')
+            .setOrigin(0, 0)
+            .setDepth(-1);
+
         this.player = new PilgrimPlayer(this, 512, 512);
         this.physics.add.collider(this.player, nation.obstacles);
 
@@ -40,6 +47,8 @@ export class Game extends Scene
         this.cameras.main.startFollow(this.player, true);
 
         this.playerInput = new PlayerInput(this, 120, this.scale.height - 120);
+
+        new CoordinateOverlay(this, 64, 64);
     }
 
     update ()
