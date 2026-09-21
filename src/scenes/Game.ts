@@ -17,11 +17,30 @@ export class Game extends Scene
     preload ()
     {
         this.load.image('pilgrim', 'assets/hero/pilgrim_placeholder.png');
+        this.load.tilemapTiledJSON('sample_village', 'assets/tiled/medieval_sample.json');
+        this.load.image('medieval_tiles', 'assets/tiled/medieval_tilesheet.png');
     }
 
     create ()
     {
-        this.player = new PilgrimPlayer(this, 512, 384);
+        const map = this.make.tilemap({ key: 'sample_village' });
+        const tileset = map.addTilesetImage('medieval_tilesheet', 'medieval_tiles')!;
+
+        map.createLayer('Land', tileset);
+
+        const obstacles = this.physics.add.staticGroup();
+        obstacles.addMultiple(map.createFromObjects('Buildings', { classType: Phaser.Physics.Arcade.Sprite }));
+        obstacles.addMultiple(map.createFromObjects('Trees', { classType: Phaser.Physics.Arcade.Sprite }));
+        obstacles.refresh();
+
+        this.player = new PilgrimPlayer(this, 512, 512);
+        this.physics.add.collider(this.player, obstacles);
+
+        this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+        this.player.setCollideWorldBounds(true);
+
+        this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+        this.cameras.main.startFollow(this.player, true);
 
         this.cursors = this.input.keyboard!.createCursorKeys();
         this.wasd = this.input.keyboard!.addKeys('W,A,S,D') as { [key: string]: Phaser.Input.Keyboard.Key };

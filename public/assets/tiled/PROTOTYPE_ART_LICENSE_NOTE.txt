@@ -1,0 +1,15 @@
+medieval_tilesheet.png / medieval_sample.json
+
+Source: phaserjs/examples (https://github.com/phaserjs/examples),
+public/assets/tilemaps/MedievalRTS/ — the repo behind labs.phaser.io.
+
+That repo's README states: "The source code in this repo is released
+under the MIT license. The assets are not. Lots of the assets in this
+repo come from old classic arcade/computer games or open and stock art
+sites. As such, you cannot use them in your own commercial games, or
+for any games that carry advertising."
+
+No per-asset license/attribution was found for this specific tileset.
+
+STATUS: prototyping only. Must be replaced with a properly licensed
+(CC0 or commercial-cleared) tileset before any public/commercial release.
