@@ -1,4 +1,11 @@
 import { Game } from './scenes/Game';
+import { TimingEncounterScene } from './scenes/encounters/TimingEncounterScene';
+import { DebateEncounterScene } from './scenes/encounters/DebateEncounterScene';
+import { GraceBeatScene } from './scenes/encounters/GraceBeatScene';
+import { healingLame } from './data/encounters/healingLame';
+import { sanhedrinDebate } from './data/encounters/sanhedrinDebate';
+import { jailDeliverance } from './data/encounters/jailDeliverance';
+import { GameStateManager } from './game/state/GameStateManager';
 import { AUTO, Game as PhaserGame, Scale, Types } from 'phaser';
 
 const config: Types.Core.GameConfig = {
@@ -22,8 +29,14 @@ const config: Types.Core.GameConfig = {
         }
     },
     scene: [
-        Game
+        Game,
+        new TimingEncounterScene(healingLame),
+        new DebateEncounterScene(sanhedrinDebate),
+        new GraceBeatScene(jailDeliverance)
     ]
 };
 
-export default new PhaserGame(config);
+const game = new PhaserGame(config);
+game.registry.set('gameState', new GameStateManager(game, 'Game'));
+
+export default game;
