@@ -12,19 +12,21 @@ The Christian game space is saturated with trivia and puzzle apps, and generic c
 3. **Deliverance** — low-tension grace beat; may have no fail state.
 
 ## Technical Foundations (build before/alongside first encounter)
-- [ ] Scene/state management structure — how Phaser scenes transition (overworld → encounter → back to overworld)
-- [ ] Basic save/progress system — so playtesters don't restart from zero
-- [ ] Asset placeholder strategy — simple shapes/silhouettes standing in for final art, same approach as the original Bonfire prototype's circle sprite
+- [x] Scene/state management structure — how Phaser scenes transition (overworld → encounter → back to overworld) — `GameStateManager` (pause/launch/resume + fade), decoupled via scene events
+- [x] Basic save/progress system — so playtesters don't restart from zero — `SaveManager`, versioned localStorage, unit-tested
+- [x] Asset placeholder strategy — simple shapes/silhouettes standing in for final art — encounter scenes use flat rectangles/circles; pilgrim sprite already placeholder art
 
 ## Phase 1 — Vertical Slice: Peter's Arc (Acts 3–5)
 **Goal:** one complete, playable path start to finish, proving the loop works before any expansion.
 
+**Status:** the three mechanics are built and playable as generic, content-driven scene classes (`TimingEncounterScene`, `DebateEncounterScene`, `GraceBeatScene`), each fed by a Peter's-arc data file, with unit tests on the underlying win/loss logic. Not yet connected to a real overworld — currently reachable only via debug keys 1/2/3 in `Game.ts`.
+
 - [ ] Minimal overworld map: temple gate → council chamber → jail, walkable, no combat, Phaser tilemap
-- [ ] **Encounter 1 — Healing the lame man** (Acts 3): timing/precision mechanic, visible miracle payoff, XP reward
-- [ ] **Encounter 2 — Arrest & Sanhedrin** (Acts 4): pressure-hold mechanic, resist wavering under threat
-- [ ] **Encounter 3 — Jail & angelic deliverance** (Acts 5): low/no-fail grace beat, tone shift to release
-- [ ] Basic XP/progression system carrying across all three encounters
-- [ ] Dialogue system delivering scripture through character speech, not exposition dumps
+- [x] **Encounter 1 — Healing the lame man** (Acts 3): timing/precision mechanic, visible miracle payoff, XP reward
+- [x] **Encounter 2 — Arrest & Sanhedrin** (Acts 4): debate-under-pressure mechanic, resist wavering under threat
+- [x] **Encounter 3 — Jail & angelic deliverance** (Acts 5): low/no-fail grace beat, tone shift to release
+- [x] Basic XP/progression system carrying across all three encounters — `SaveManager.faithXP`, no UI yet
+- [ ] Dialogue system delivering scripture through character speech, not exposition dumps — currently static per-line text, not a reusable dialogue system
 
 ## Content & Theological Accountability
 - [ ] Scripture accuracy review pass per encounter before marking it "done" (reviewer: wife, editorial/discernment role)
