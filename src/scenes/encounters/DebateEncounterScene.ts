@@ -1,5 +1,6 @@
-import { GameObjects, Math as PhaserMath, Scene, Time } from 'phaser';
+import { GameObjects, Scene, Time } from 'phaser';
 import { DebateEncounterData, DebateOption } from '../../game/encounters/types';
+import { applyDebateChoice, DebateMeters, isDebateSuccess, TIMED_OUT_OPTION } from '../../game/encounters/debateLogic';
 
 const PALETTE = {
     bg: 0x1b1812, panel: 0x26221a, line: 0x3c3527,
@@ -15,8 +16,7 @@ const PALETTE = {
 export class DebateEncounterScene extends Scene
 {
     private roundIndex = 0;
-    private conviction = 20;
-    private intimidation = 20;
+    private meters: DebateMeters = { conviction: 20, intimidation: 20 };
     private locked = false;
     private timerEvent?: Time.TimerEvent;
 
@@ -36,8 +36,7 @@ export class DebateEncounterScene extends Scene
     init (): void
     {
         this.roundIndex = 0;
-        this.conviction = 20;
-        this.intimidation = 20;
+        this.meters = { conviction: 20, intimidation: 20 };
         this.locked = false;
     }
 
@@ -70,8 +69,8 @@ export class DebateEncounterScene extends Scene
 
     private renderMeters (): void
     {
-        this.convictionBar.width = this.barWidth * (PhaserMath.Clamp(this.conviction, 0, 100) / 100);
-        this.intimidationBar.width = this.barWidth * (PhaserMath.Clamp(this.intimidation, 0, 100) / 100);
+        this.convictionBar.width = this.barWidth * (this.meters.conviction / 100);
+        this.intimidationBar.width = this.barWidth * (this.meters.intimidation / 100);
     }
 
     private loadRound (): void
@@ -111,7 +110,7 @@ export class DebateEncounterScene extends Scene
                 const remaining = Math.max(0, 1 - (this.time.now - start) / roundMs);
                 this.timerBar.scaleX = remaining;
                 if (remaining <= 0 && !this.locked) {
-                    this.resolveChoice({ kind: 'silent', label: 'Time runs out.', conviction: -10, intimidation: 25 });
+                    this.resolveChoice({ kind: 'silent', label: 'Time runs out.', ...TIMED_OUT_OPTION });
                 }
             }
         });
@@ -123,8 +122,7 @@ export class DebateEncounterScene extends Scene
         this.locked = true;
         this.timerEvent?.remove();
 
-        this.conviction = PhaserMath.Clamp(this.conviction + option.conviction, 0, 100);
-        this.intimidation = PhaserMath.Clamp(this.intimidation + option.intimidation, 0, 100);
+        this.meters = applyDebateChoice(this.meters, option);
         this.renderMeters();
 
         this.roundIndex++;
@@ -139,7 +137,7 @@ export class DebateEncounterScene extends Scene
 
     private finish (): void
     {
-        const success = this.conviction >= this.intimidation;
+        const success = isDebateSuccess(this.meters);
         this.optionButtons.forEach((btn) => btn.destroy());
         this.optionButtons = [];
         this.questionText.setText(success ? this.content.successLine : this.content.failLine);

@@ -1,5 +1,6 @@
 import { GameObjects, Scene } from 'phaser';
 import { TimingEncounterData } from '../../game/encounters/types';
+import { advanceMarker, isTimingHit } from '../../game/encounters/timingLogic';
 
 const PALETTE = { bg: 0x1b1812, track: 0x3c3527, zone: 0xa9822f, marker: 0xb5563c, text: '#efe6d4', dim: '#a99d86' };
 
@@ -11,7 +12,7 @@ const PALETTE = { bg: 0x1b1812, track: 0x3c3527, zone: 0xa9822f, marker: 0xb5563
 export class TimingEncounterScene extends Scene
 {
     private markerT = 0;
-    private direction = 1;
+    private direction: 1 | -1 = 1;
     private locked = false;
 
     private marker!: GameObjects.Rectangle;
@@ -68,9 +69,9 @@ export class TimingEncounterScene extends Scene
     {
         if (this.locked) return;
 
-        this.markerT += this.direction * this.content.speed * (delta / 1000);
-        if (this.markerT >= 1) { this.markerT = 1; this.direction = -1; }
-        if (this.markerT <= 0) { this.markerT = 0; this.direction = 1; }
+        const next = advanceMarker(this.markerT, this.direction, this.content.speed, delta);
+        this.markerT = next.markerT;
+        this.direction = next.direction;
 
         this.marker.x = this.trackX + this.trackWidth * this.markerT;
     }
@@ -80,7 +81,7 @@ export class TimingEncounterScene extends Scene
         if (this.locked) return;
         this.locked = true;
 
-        const success = this.markerT >= this.content.zoneStart && this.markerT <= this.content.zoneEnd;
+        const success = isTimingHit(this.markerT, this.content.zoneStart, this.content.zoneEnd);
         this.statusText.setText(success ? this.content.successLine : this.content.failLine);
 
         this.time.delayedCall(1200, () => this.finish(success));
