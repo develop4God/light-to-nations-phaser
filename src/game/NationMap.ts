@@ -13,6 +13,7 @@ export class NationMap
 {
     tilemap: Tilemaps.Tilemap;
     obstacles: Physics.Arcade.StaticGroup;
+    groundLayer: Tilemaps.TilemapLayer;
 
     constructor (scene: Scene, config: NationMapConfig)
     {
@@ -23,7 +24,11 @@ export class NationMap
             throw new Error(`NationMap: tileset "${config.tilesetName}" not found in map "${config.mapKey}"`);
         }
 
-        this.tilemap.createLayer(config.groundLayer, tileset);
+        const groundLayer = this.tilemap.createLayer(config.groundLayer, tileset);
+        if (!groundLayer) {
+            throw new Error(`NationMap: ground layer "${config.groundLayer}" not found in map "${config.mapKey}"`);
+        }
+        this.groundLayer = groundLayer;
 
         this.obstacles = scene.physics.add.staticGroup();
         for (const layerName of config.obstacleLayers) {
