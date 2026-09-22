@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 import { NationMap } from '../game/NationMap';
 import { PilgrimPlayer } from '../game/PilgrimPlayer';
 import { PlayerInput } from '../game/PlayerInput';
+import { GameStateManager } from '../game/state/GameStateManager';
 import { CoordinateOverlay } from '../ui/CoordinateOverlay';
 
 export class Game extends Scene
@@ -47,6 +48,13 @@ export class Game extends Scene
         this.cameras.main.startFollow(this.player, true);
 
         this.playerInput = new PlayerInput(this, 120, this.scale.height - 120);
+
+        // Temporary debug triggers for Peter's arc encounters, until map
+        // trigger zones exist: 1 = healing, 2 = Sanhedrin, 3 = jail.
+        const gameState = this.registry.get('gameState') as GameStateManager;
+        this.input.keyboard?.on('keydown-ONE', () => gameState.enterEncounter('healingLame'));
+        this.input.keyboard?.on('keydown-TWO', () => gameState.enterEncounter('sanhedrinDebate'));
+        this.input.keyboard?.on('keydown-THREE', () => gameState.enterEncounter('jailDeliverance'));
 
         new CoordinateOverlay(this, 64, 64);
     }
